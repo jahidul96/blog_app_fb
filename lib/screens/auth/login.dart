@@ -7,41 +7,26 @@ import 'package:flutter/services.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 
-class RegisterScreen extends StatefulWidget {
-  const RegisterScreen({super.key});
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
 
   @override
-  State<RegisterScreen> createState() => _RegisterScreenState();
+  State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _RegisterScreenState extends State<RegisterScreen> {
+class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
 
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
-  final usernameController = TextEditingController();
-
-  Future signIn() async {
+  Future login() async {
     try {
       final credential = await FirebaseAuth.instance
-          .createUserWithEmailAndPassword(
-              email: emailController.text, password: passwordController.text);
-
-      Map<String, dynamic> userData = {
-        "username": usernameController.text,
-        "email": emailController.text,
-        "uid": credential.user!.uid,
-      };
-
-      if (credential.user != null) {
-        FirebaseFirestore.instance
-            .collection("blogUsers")
-            .doc(credential.user!.uid)
-            .set(userData)
-            .then((value) {
-          print("data added in firestore!!");
-        });
-      }
+          .signInWithEmailAndPassword(
+              email: emailController.text, password: passwordController.text)
+          .then((value) {
+        print("login done");
+      });
     } on PlatformException catch (e) {
       print("some problem occuerd");
     }
@@ -56,14 +41,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            TextField(
-              controller: usernameController,
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                hintText: "Username",
-              ),
-            ),
-            SizedBox(height: 15),
             TextField(
               controller: emailController,
               decoration: InputDecoration(
@@ -87,7 +64,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 borderRadius: BorderRadius.circular(10),
                 child: MaterialButton(
                   color: Colors.amber,
-                  onPressed: signIn,
+                  onPressed: login,
                   child: Text(
                     "SignUp",
                     style: TextStyle(
