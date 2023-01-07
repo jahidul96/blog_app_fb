@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
+import 'package:blog_app_fb/screens/home.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -26,6 +27,9 @@ class _LoginScreenState extends State<LoginScreen> {
               email: emailController.text, password: passwordController.text)
           .then((value) {
         print("login done");
+
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => HomeScreen()));
       });
     } on PlatformException catch (e) {
       print("some problem occuerd");
