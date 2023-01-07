@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'package:blog_app_fb/screens/blog_related/post_a_blog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
@@ -90,8 +91,16 @@ class _AccountPageState extends State<AccountPage> {
                 clickableTextComp(
                   text: "Profile",
                 ),
-                clickableTextComp(
-                  text: "Post a Blog",
+                GestureDetector(
+                  child: clickableTextComp(
+                    text: "Post a Blog",
+                  ),
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => PostBlogScreen()));
+                  },
                 ),
                 clickableTextComp(
                   text: "Favorites",
