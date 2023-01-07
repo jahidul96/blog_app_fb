@@ -2,6 +2,7 @@
 
 import 'package:blog_app_fb/components/single_blog.dart';
 import 'package:blog_app_fb/components/user_profile_comp.dart';
+import 'package:blog_app_fb/screens/account.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
@@ -38,7 +39,17 @@ class _HomeScreenState extends State<HomeScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     // left content
-                    Expanded(child: UserProfileComp()),
+                    Expanded(
+                      child: GestureDetector(
+                        child: UserProfileComp(),
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => AccountPage()));
+                        },
+                      ),
+                    ),
                     // right bell button
                     IconButton(
                         onPressed: () {}, icon: Icon(Icons.notifications))
