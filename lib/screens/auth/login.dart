@@ -21,7 +21,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final passwordController = TextEditingController();
   Future login() async {
     try {
-      final credential = await FirebaseAuth.instance
+      await FirebaseAuth.instance
           .signInWithEmailAndPassword(
               email: emailController.text, password: passwordController.text)
           .then((value) {
@@ -50,6 +50,7 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             SizedBox(height: 15),
             TextField(
+              obscureText: true,
               controller: passwordController,
               decoration: InputDecoration(
                 border: OutlineInputBorder(),
@@ -75,7 +76,25 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
               ),
-            )
+            ),
+            SizedBox(
+              height: 15,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text("Don't have an Account ?"),
+                SizedBox(
+                  width: 15,
+                ),
+                InkWell(
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                  child: Text("SignUp here!"),
+                )
+              ],
+            ),
           ],
         ),
       ),

@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
+import 'package:blog_app_fb/screens/auth/login.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -43,7 +44,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         });
       }
     } on PlatformException catch (e) {
-      print("some problem occuerd");
+      print("some problem occuerd $e");
     }
   }
 
@@ -74,6 +75,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             SizedBox(height: 15),
             TextField(
               controller: passwordController,
+              obscureText: true,
               decoration: InputDecoration(
                 border: OutlineInputBorder(),
                 hintText: "Password",
@@ -98,7 +100,29 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                 ),
               ),
-            )
+            ),
+            SizedBox(
+              height: 15,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text("Already have an Account ?"),
+                SizedBox(
+                  width: 15,
+                ),
+                InkWell(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => LoginScreen(),
+                        ));
+                  },
+                  child: Text("Login here!"),
+                )
+              ],
+            ),
           ],
         ),
       ),
