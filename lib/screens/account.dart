@@ -117,8 +117,65 @@ class _AccountPageState extends State<AccountPage> {
                 clickableTextComp(
                   text: "Password & Security",
                 ),
-                clickableTextComp(
-                  text: "Logout",
+
+                // logout button and functionality
+                GestureDetector(
+                  onTap: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) {
+                        return AlertDialog(
+                          content: Container(
+                            width: 200,
+                            height: 200,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Text("Are you sure want to logout?"),
+                                SizedBox(height: 20),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    // cancel button
+                                    MaterialButton(
+                                      color: Colors.red,
+                                      onPressed: () => Navigator.pop(context),
+                                      child: Text(
+                                        "Cancel",
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+
+                                    // confirm buttom
+
+                                    MaterialButton(
+                                      color: Colors.blue,
+                                      onPressed: () {},
+                                      child: Text(
+                                        "Confirm",
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                )
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  },
+                  child: clickableTextComp(
+                    text: "Logout",
+                  ),
                 ),
               ],
             ),
