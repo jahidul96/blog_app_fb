@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
+
 import 'package:blog_app_fb/components/tags.dart';
 import 'package:blog_app_fb/components/user_profile_comp.dart';
 import 'package:flutter/material.dart';
@@ -17,8 +19,7 @@ class _BlogDetailsState extends State<BlogDetails> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-          child: Column(
+      body: Column(
         children: [
           // stack img/backicon/profile/fav etc content
           Container(
@@ -105,8 +106,54 @@ class _BlogDetailsState extends State<BlogDetails> {
               ],
             ),
           ),
+
+          // scrolllable content!!!!
+          Expanded(
+            child: SingleChildScrollView(
+              child: Container(
+                // Bottom content goes here
+                child: Column(
+                  children: [
+                    Container(
+                      margin: EdgeInsets.only(left: 15, right: 15),
+                      child: Text(
+                          "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries,"),
+                    ),
+
+                    Container(
+                      width: double.infinity,
+                      margin: EdgeInsets.only(top: 15),
+                      decoration: BoxDecoration(
+                          border: Border(
+                              top: BorderSide(
+                        width: 1,
+                        color: Colors.grey,
+                      ))),
+                      child: Container(
+                          margin: EdgeInsets.only(
+                            left: 15,
+                            right: 15,
+                            top: 20,
+                          ),
+                          child: Column(
+                            children: [
+                              commentsComp(),
+                              commentsComp(),
+                              commentsComp(),
+                              commentsComp(),
+                              commentsComp(),
+                            ],
+                          )),
+                    ),
+
+                    // user comments
+                  ],
+                ),
+              ),
+            ),
+          ),
         ],
-      )),
+      ),
     );
   }
 
@@ -119,5 +166,47 @@ class _BlogDetailsState extends State<BlogDetails> {
           SizedBox(width: 5),
           Text(count),
         ],
+      );
+
+  Widget commentsComp() => Container(
+        margin: EdgeInsets.only(bottom: 10),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Icon(Icons.person),
+            SizedBox(
+              width: 10,
+            ),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    padding: EdgeInsets.all(10),
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade300,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text("name"),
+                        SizedBox(
+                          height: 6,
+                        ),
+                        Text("comment"),
+                      ],
+                    ),
+                  ),
+                  SizedBox(
+                    height: 3,
+                  ),
+                  Text("10.12.12")
+                ],
+              ),
+            ),
+          ],
+        ),
       );
 }
