@@ -16,6 +16,8 @@ class BlogDetails extends StatefulWidget {
 class _BlogDetailsState extends State<BlogDetails> {
   String img =
       "https://media.istockphoto.com/id/1270067126/photo/smiling-indian-man-looking-at-camera.jpg?s=612x612&w=0&k=20&c=ovIQ5GPurLd3mOUj82jB9v-bjGZ8updgy1ACaHMeEC0=";
+
+  List someItems = [1, 2, 3, 4, 5, 6, 7];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -135,14 +137,16 @@ class _BlogDetailsState extends State<BlogDetails> {
                             right: 15,
                             top: 20,
                           ),
-                          child: Column(
-                            children: [
-                              commentsComp(),
-                              commentsComp(),
-                              commentsComp(),
-                              commentsComp(),
-                              commentsComp(),
-                            ],
+                          child: Expanded(
+                            child: ListView.builder(
+                                padding: EdgeInsets.zero,
+                                scrollDirection: Axis.vertical,
+                                shrinkWrap: true,
+                                physics: ClampingScrollPhysics(),
+                                itemCount: 5,
+                                itemBuilder: (context, index) {
+                                  return commentsComp();
+                                }),
                           )),
                     ),
 
@@ -153,6 +157,62 @@ class _BlogDetailsState extends State<BlogDetails> {
             ),
           ),
         ],
+      ),
+
+      // bottom flotaing action bi=utton and content
+      floatingActionButton: FloatingActionButton.extended(
+        backgroundColor: Colors.black,
+        onPressed: () {
+          showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                content: Container(
+                  width: 300,
+                  height: 250,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      // comment textfield
+                      TextField(
+                        maxLines: null,
+                        keyboardType: TextInputType.multiline,
+                        decoration: InputDecoration(
+                          hintText: "your comment...",
+                        ),
+                      ),
+                      SizedBox(
+                        height: 15,
+                      ),
+                      SizedBox(
+                        width: double.infinity,
+                        child: MaterialButton(
+                          color: Colors.blue,
+                          onPressed: () {},
+                          child: Text(
+                            "Add",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+              );
+            },
+          );
+        },
+        label: Text(
+          "Add comment!",
+        ),
+        icon: Icon(
+          Icons.add,
+        ),
       ),
     );
   }
