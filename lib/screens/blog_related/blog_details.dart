@@ -45,8 +45,13 @@ class _BlogDetailsState extends State<BlogDetails> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       IconButton(
-                        onPressed: () {},
-                        icon: Icon(Icons.chevron_left),
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        icon: Icon(
+                          Icons.chevron_left,
+                          color: Colors.white,
+                        ),
                       ),
                       IconButton(
                         onPressed: () {},

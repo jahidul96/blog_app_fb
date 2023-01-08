@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:blog_app_fb/screens/blog_related/post_a_blog.dart';
+import 'package:blog_app_fb/screens/profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
@@ -88,8 +89,16 @@ class _AccountPageState extends State<AccountPage> {
             child: Column(
               children: [
                 clickableTextComp(text: "Update Profile Pic", index: 1),
-                clickableTextComp(
-                  text: "Profile",
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => ProfileScreen()));
+                  },
+                  child: clickableTextComp(
+                    text: "Profile",
+                  ),
                 ),
                 GestureDetector(
                   child: clickableTextComp(
