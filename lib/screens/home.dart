@@ -24,7 +24,7 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             // topProfile content!!
             Container(
-              height: 70,
+              height: 60,
               decoration: BoxDecoration(
                 border: Border(
                     bottom: BorderSide(
@@ -62,6 +62,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
             Expanded(
                 child: ListView.builder(
+                    padding: EdgeInsets.only(top: 10),
+                    shrinkWrap: true,
+                    physics: ClampingScrollPhysics(),
                     itemCount: 5,
                     itemBuilder: ((context, index) {
                       return SingleBlog();
