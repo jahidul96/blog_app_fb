@@ -1,6 +1,4 @@
 import 'package:blog_app_fb/screens/auth/auth_page.dart';
-import 'package:blog_app_fb/screens/auth/login.dart';
-import 'package:blog_app_fb/screens/auth/register.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 

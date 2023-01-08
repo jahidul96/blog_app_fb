@@ -93,6 +93,7 @@ class _PostBlogScreenState extends State<PostBlogScreen> {
               // tags container
               Container(
                 height: 60,
+                alignment: Alignment.center,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
                   color: Colors.white,
@@ -106,9 +107,9 @@ class _PostBlogScreenState extends State<PostBlogScreen> {
                   keyboardType: TextInputType.multiline,
                   maxLines: null,
                   decoration: InputDecoration(
-                    border: InputBorder.none,
-                    fillColor: Colors.white,
-                  ),
+                      border: InputBorder.none,
+                      fillColor: Colors.white,
+                      hintText: "Tags.."),
                 ),
               ),
 
