@@ -1,11 +1,15 @@
 // ignore_for_file: prefer_const_constructors, avoid_unnecessary_containers, prefer_const_literals_to_create_immutables
 
+import 'dart:io';
 import 'dart:math';
 
 import 'package:blog_app_fb/components/button_widget.dart';
+import 'package:blog_app_fb/utils/needed_data.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:image_picker/image_picker.dart';
 
 class PostBlogScreen extends StatefulWidget {
   const PostBlogScreen({super.key});
@@ -15,6 +19,82 @@ class PostBlogScreen extends StatefulWidget {
 }
 
 class _PostBlogScreenState extends State<PostBlogScreen> {
+  // initialized image placeholder
+  File? _image;
+
+  // initialized category
+  String categorie = "";
+
+  // initialized desc/tags controller
+
+  final descController = TextEditingController();
+  final tagsController = TextEditingController();
+
+  // from gallery
+  Future pickFromGallery() async {
+    try {
+      final img = await ImagePicker().pickImage(source: ImageSource.gallery);
+      if (img == null) return;
+      final tempImg = File(img.path);
+      setState(() {
+        _image = tempImg;
+      });
+    } on PlatformException catch (e) {
+      print("error occuer's");
+    }
+  }
+
+  // selectCategories func
+  Future selectCategories() {
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            content: Container(
+                width: double.infinity,
+                height: 400,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: AppNeededData.categories.map((category) {
+                    return GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          categorie = category;
+                        });
+                        Navigator.pop(context);
+                      },
+                      child: Container(
+                        height: 45,
+                        width: double.infinity,
+                        alignment: Alignment.center,
+                        color: Colors.grey.shade300,
+                        margin: EdgeInsets.only(bottom: 6),
+                        child: Text(category),
+                      ),
+                    );
+                  }).toList(),
+                )),
+          );
+        });
+  }
+
+// postDataFunc
+
+  Future postDataFunc() async {
+    final tagArray = tagsController.text.split(' ');
+    Map<String, dynamic> postData = {
+      "postImg": _image,
+      "categorie": categorie,
+      "description": descController.text,
+      "tags": tagArray,
+      "createdAt": DateTime.now(),
+    };
+
+    print("ALL USER TYPED DATA!!");
+    print(postData);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,46 +109,68 @@ class _PostBlogScreenState extends State<PostBlogScreen> {
           margin: EdgeInsets.only(left: 15, right: 15),
           child: Column(
             children: [
-              // image adding placeholder!!
-              Container(
-                margin: EdgeInsets.only(
-                  top: 10,
-                ),
-                child: Center(
-                    child: Column(
-                  children: [
-                    Icon(Icons.image),
-                    SizedBox(height: 7),
-                    Text(
-                      "Add a Featured Image",
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
+              // after img pic img show!!
+              _image != null
+                  ? GestureDetector(
+                      onTap: pickFromGallery,
+                      child: Image.file(
+                        _image!,
+                        width: 200,
+                        height: 120,
+                        fit: BoxFit.cover,
+                      ),
+                    )
+                  :
+                  // image adding placeholder!!
+                  GestureDetector(
+                      onTap: pickFromGallery,
+                      child: Container(
+                        margin: EdgeInsets.only(
+                          top: 10,
+                        ),
+                        child: Center(
+                            child: Column(
+                          children: [
+                            Icon(Icons.image),
+                            SizedBox(height: 7),
+                            Text(
+                              "Add a Featured Image",
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
+                            ),
+                          ],
+                        )),
                       ),
                     ),
-                  ],
-                )),
-              ),
 
               // select categories
-              Container(
-                margin: EdgeInsets.only(top: 30, bottom: 20),
-                height: 55,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  color: Colors.white,
-                ),
-                padding: EdgeInsets.only(left: 8, right: 8),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      "Select Categories",
-                      style: TextStyle(color: Colors.black, fontSize: 15),
-                    ),
-                    Icon(Icons.create),
-                  ],
+              GestureDetector(
+                onTap: selectCategories,
+                child: Container(
+                  margin: EdgeInsets.only(top: 30, bottom: 20),
+                  height: 55,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: Colors.white,
+                  ),
+                  padding: EdgeInsets.only(left: 8, right: 8),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        categorie.isNotEmpty ? categorie : "Select Categories",
+                        style: TextStyle(color: Colors.black, fontSize: 15),
+                      ),
+
+                      // check button
+                      categorie.isNotEmpty
+                          ? Icon(Icons.check)
+                          : Icon(Icons.create),
+                    ],
+                  ),
                 ),
               ),
 
@@ -80,6 +182,7 @@ class _PostBlogScreenState extends State<PostBlogScreen> {
                   padding: EdgeInsets.all(10),
                   color: Colors.white,
                   child: TextField(
+                    controller: descController,
                     keyboardType: TextInputType.multiline,
                     maxLines: null,
                     decoration: InputDecoration(
@@ -104,6 +207,7 @@ class _PostBlogScreenState extends State<PostBlogScreen> {
                 ),
                 margin: EdgeInsets.only(top: 20, bottom: 20),
                 child: TextField(
+                  controller: tagsController,
                   keyboardType: TextInputType.multiline,
                   maxLines: null,
                   decoration: InputDecoration(
@@ -114,11 +218,16 @@ class _PostBlogScreenState extends State<PostBlogScreen> {
               ),
 
               // buttons
-              buttons(onPress: () {}, btnText: "Preview"),
+              buttons(
+                  onPress: () {
+                    print(
+                        "this was initailized as empty now categorie is $categorie");
+                  },
+                  btnText: "Preview"),
               SizedBox(
                 height: 20,
               ),
-              buttons(onPress: () {}, btnText: "Post"),
+              buttons(onPress: postDataFunc, btnText: "Post"),
             ],
           ),
         ),
