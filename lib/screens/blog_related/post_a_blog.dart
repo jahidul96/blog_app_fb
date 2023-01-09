@@ -4,6 +4,9 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:blog_app_fb/components/button_widget.dart';
+import 'package:blog_app_fb/components/single_blog.dart';
+import 'package:blog_app_fb/components/tags.dart';
+import 'package:blog_app_fb/components/user_profile_comp.dart';
 import 'package:blog_app_fb/utils/needed_data.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -80,7 +83,6 @@ class _PostBlogScreenState extends State<PostBlogScreen> {
   }
 
 // postDataFunc
-
   Future postDataFunc() async {
     final tagArray = tagsController.text.split(' ');
     Map<String, dynamic> postData = {
@@ -93,6 +95,18 @@ class _PostBlogScreenState extends State<PostBlogScreen> {
 
     print("ALL USER TYPED DATA!!");
     print(postData);
+  }
+
+  // previewPost func
+
+  previewPost() {
+    showModalBottomSheet(
+        context: context,
+        builder: (context) {
+          return SingleChildScrollView(
+            child: previewPostWidget(),
+          );
+        });
   }
 
   @override
@@ -218,12 +232,7 @@ class _PostBlogScreenState extends State<PostBlogScreen> {
               ),
 
               // buttons
-              buttons(
-                  onPress: () {
-                    print(
-                        "this was initailized as empty now categorie is $categorie");
-                  },
-                  btnText: "Preview"),
+              buttons(onPress: previewPost, btnText: "Preview"),
               SizedBox(
                 height: 20,
               ),
@@ -234,4 +243,57 @@ class _PostBlogScreenState extends State<PostBlogScreen> {
       ),
     );
   }
+
+  // previewPostWidget content
+  Widget previewPostWidget() => Container(
+        margin: EdgeInsets.only(top: 15),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Container(
+            margin: EdgeInsets.only(left: 12, right: 12, bottom: 8),
+            child: UserProfileComp(),
+          ),
+          Image.file(
+            _image!,
+            width: double.infinity,
+            height: 200,
+            fit: BoxFit.cover,
+          ),
+          Container(
+            margin: EdgeInsets.only(left: 12, right: 12, top: 8),
+            child:
+                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              // details sample text
+              Text(descController.text.toString()),
+
+              // tags
+              Container(
+                margin: EdgeInsets.only(top: 10),
+                child: Row(
+                  children: tagsController.text
+                      .split(' ')
+                      .map((tag) => tags(text: tag))
+                      .toList(),
+                ),
+              ),
+              // read more button
+              TextButton(
+                  onPressed: () {},
+                  child: Text(
+                    "Read more",
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      decoration: TextDecoration.underline,
+                    ),
+                  ))
+            ]),
+          ),
+
+          // post button
+          Container(
+              margin: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+              child: buttons(onPress: postDataFunc, btnText: "Post")),
+        ]),
+      );
 }
