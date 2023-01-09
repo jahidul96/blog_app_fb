@@ -13,6 +13,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path/path.dart' as p;
 
 class PostBlogScreen extends StatefulWidget {
   const PostBlogScreen({super.key});
@@ -39,6 +40,7 @@ class _PostBlogScreenState extends State<PostBlogScreen> {
       final img = await ImagePicker().pickImage(source: ImageSource.gallery);
       if (img == null) return;
       final tempImg = File(img.path);
+
       setState(() {
         _image = tempImg;
       });

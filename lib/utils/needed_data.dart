@@ -6,7 +6,7 @@ class AppNeededData {
   static final List<String> categories = [
     "Sport",
     "News",
-    "Proggraminng",
+    "Proggraming",
     "Enterteinment",
     "Others",
   ];

@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
 import 'package:blog_app_fb/screens/auth/login.dart';
+import 'package:blog_app_fb/utils/needed_data.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -18,10 +19,49 @@ class RegisterScreen extends StatefulWidget {
 class _RegisterScreenState extends State<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
 
+  // initialized category
+  String categorie = "";
+
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final usernameController = TextEditingController();
 
+  // selectCategories func
+  Future selectCategories() {
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            content: Container(
+                width: double.infinity,
+                height: 400,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: AppNeededData.categories.map((category) {
+                    return GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          categorie = category;
+                        });
+                        Navigator.pop(context);
+                      },
+                      child: Container(
+                        height: 45,
+                        width: double.infinity,
+                        alignment: Alignment.center,
+                        color: Colors.grey.shade300,
+                        margin: EdgeInsets.only(bottom: 6),
+                        child: Text(category),
+                      ),
+                    );
+                  }).toList(),
+                )),
+          );
+        });
+  }
+
+// signin func
   Future signIn() async {
     try {
       final credential = await FirebaseAuth.instance
@@ -32,6 +72,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
         "username": usernameController.text,
         "email": emailController.text,
         "uid": credential.user!.uid,
+        "categorie": categorie,
+        "profilePic": "",
+        "createdAt": DateTime.now(),
       };
 
       if (credential.user != null) {
@@ -81,7 +124,34 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 hintText: "Password",
               ),
             ),
-            SizedBox(height: 25),
+            // select categories
+            GestureDetector(
+              onTap: selectCategories,
+              child: Container(
+                margin: EdgeInsets.only(top: 15, bottom: 20),
+                height: 55,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  color: Colors.grey.shade300,
+                ),
+                padding: EdgeInsets.only(left: 8, right: 8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      categorie.isNotEmpty ? categorie : "Select Categories",
+                      style: TextStyle(color: Colors.black, fontSize: 15),
+                    ),
+
+                    // check button
+                    categorie.isNotEmpty
+                        ? Icon(Icons.check)
+                        : Icon(Icons.create),
+                  ],
+                ),
+              ),
+            ),
+
             SizedBox(
               height: 50,
               width: double.infinity,
