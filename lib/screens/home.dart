@@ -19,6 +19,27 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  Map<String, dynamic> loggedinUser = {};
+
+  @override
+  void initState() {
+    final user = FirebaseFirestore.instance
+        .collection("blogUsers")
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .get();
+
+    user.then((value) {
+      print("username");
+      print(value["username"]);
+      print("u=id");
+      print(value["uid"]);
+      print("email");
+      print(value["email"]);
+    });
+
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -56,7 +77,11 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     // right bell button
                     IconButton(
-                        onPressed: () {}, icon: Icon(Icons.notifications))
+                      onPressed: () {
+                        print(loggedinUser["email"]);
+                      },
+                      icon: Icon(Icons.notifications),
+                    ),
                   ],
                 ),
               ),
