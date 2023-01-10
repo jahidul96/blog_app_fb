@@ -3,7 +3,10 @@
 import 'package:blog_app_fb/components/tags.dart';
 import 'package:blog_app_fb/components/user_profile_comp.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 
@@ -16,57 +19,174 @@ class BlogDetails extends StatefulWidget {
 }
 
 class _BlogDetailsState extends State<BlogDetails> {
-  String img =
-      "https://media.istockphoto.com/id/1270067126/photo/smiling-indian-man-looking-at-camera.jpg?s=612x612&w=0&k=20&c=ovIQ5GPurLd3mOUj82jB9v-bjGZ8updgy1ACaHMeEC0=";
+  // fb auth email
+  final myEmail = FirebaseAuth.instance.currentUser!.email;
 
-  List someItems = [1, 2, 3, 4, 5, 6, 7];
+  // comment textController
+  final commentTextController = TextEditingController();
+
+  // local initializer
+  List localCommentRef = [];
+  List localLikesRef = [];
+
+  // likeUnlikePost
+  likeUnlikePost() async {
+    if (localLikesRef.contains(myEmail)) {
+      localLikesRef.remove(myEmail);
+      try {
+        await FirebaseFirestore.instance
+            .collection("allblogs")
+            .doc(widget.doc.id)
+            .update({"likes": localLikesRef});
+      } on PlatformException catch (e) {
+        print(e);
+      }
+    } else {
+      final updatedLikes = [...localLikesRef, myEmail];
+      try {
+        await FirebaseFirestore.instance
+            .collection("allblogs")
+            .doc(widget.doc.id)
+            .update({"likes": updatedLikes});
+      } on PlatformException catch (e) {
+        print(e);
+      }
+    }
+  }
+
+  // comment on a post
+  commentOnPost() async {
+    Map<String, dynamic> comment = {
+      "commentedBy": myEmail,
+      "commentText": commentTextController.text,
+      "commentedAt": DateTime.now(),
+    };
+
+    final updatedComments = [...localCommentRef, comment];
+
+    try {
+      await FirebaseFirestore.instance
+          .collection("allblogs")
+          .doc(widget.doc.id)
+          .update({"comments": updatedComments});
+
+      print("comment added!");
+      Navigator.pop(context);
+      commentTextController.clear();
+    } on PlatformException catch (e) {
+      print(e);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final commentLength = widget.doc["comments"].length.toString();
     return Scaffold(
-      body: Column(
-        children: [
-          // stack img/backicon/profile/fav etc content
-          Container(
-            width: double.infinity,
-            height: 200,
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: NetworkImage(
-                  widget.doc["blogImgUrl"],
-                ),
-                fit: BoxFit.cover,
-              ),
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      body: StreamBuilder<DocumentSnapshot>(
+        stream: FirebaseFirestore.instance
+            .collection("allblogs")
+            .doc(widget.doc.id)
+            .snapshots(),
+        builder: (context, snapshot) {
+          // loadiing state
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+
+          // data content
+          if (snapshot.hasData != null) {
+            final data = snapshot.data;
+            localCommentRef = snapshot.data!["comments"];
+            localLikesRef = snapshot.data!["likes"];
+
+            return Column(
               children: [
-                // top icon
+                // stack img/backicon/profile/fav etc content
                 Container(
-                  margin: EdgeInsets.only(left: 5, right: 5, top: 20),
+                  alignment: Alignment.topLeft,
+                  width: double.infinity,
+                  height: 200,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: NetworkImage(
+                        data!["blogImgUrl"],
+                      ),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  // top icon
+                  child: Container(
+                    margin: EdgeInsets.only(left: 5, right: 5, top: 30),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        IconButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          icon: Icon(
+                            Icons.chevron_left,
+                            color: Colors.white,
+                          ),
+                        ),
+                        IconButton(
+                          onPressed: likeUnlikePost,
+                          icon: Icon(Icons.favorite),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
+                //like/comment/view and date container
+                Container(
+                  margin:
+                      EdgeInsets.only(left: 15, right: 15, top: 5, bottom: 5),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      IconButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                        icon: Icon(
-                          Icons.chevron_left,
-                          color: Colors.white,
-                        ),
+                      Row(
+                        children: [
+                          iconComp(
+                              icon: Icons.favorite,
+                              count: data["likes"].length.toString()),
+                          SizedBox(width: 7),
+                          iconComp(
+                              icon: Icons.chat,
+                              count: data["comments"].length.toString()),
+                          SizedBox(width: 7),
+                          iconComp(
+                              icon: Icons.remove_red_eye,
+                              count: data["clicks"].toString()),
+                        ],
                       ),
-                      IconButton(
-                        onPressed: () {},
-                        icon: Icon(Icons.favorite),
-                      ),
+                      Text("10/12/22"),
                     ],
                   ),
                 ),
 
+                // tags
+                Container(
+                  height: 30,
+                  margin: EdgeInsets.only(left: 15, right: 15, bottom: 5),
+                  child: ListView.builder(
+                      padding: EdgeInsets.zero,
+                      scrollDirection: Axis.horizontal,
+                      itemCount: data["tags"].length,
+                      itemBuilder: (context, index) {
+                        return Row(
+                          children: [
+                            tags(text: data["tags"][index].toString()),
+                          ],
+                        );
+                      }),
+                ),
+
                 // profile of writer
                 Container(
-                  margin: EdgeInsets.only(bottom: 15, left: 15, right: 15),
+                  margin:
+                      EdgeInsets.only(bottom: 5, left: 15, right: 15, top: 5),
                   alignment: Alignment.bottomCenter,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -76,107 +196,74 @@ class _BlogDetailsState extends State<BlogDetails> {
                           onPressed: () {},
                           icon: Icon(
                             Icons.add,
-                            color: Colors.white,
+                            color: Colors.black,
                           )),
                     ],
                   ),
                 ),
-              ],
-            ),
-          ),
-
-          //like/comment/view and date container
-          Container(
-            margin: EdgeInsets.only(left: 15, right: 15, top: 10, bottom: 10),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    iconComp(
-                        icon: Icons.favorite,
-                        count: widget.doc["clicks"].toString()),
-                    SizedBox(width: 7),
-                    iconComp(icon: Icons.chat, count: commentLength),
-                    SizedBox(width: 7),
-                    iconComp(
-                        icon: Icons.remove_red_eye,
-                        count: widget.doc["likes"].toString()),
-                  ],
-                ),
-                Text("10/12/22"),
-              ],
-            ),
-          ),
-
-          // tags
-          Container(
-            height: 40,
-            margin: EdgeInsets.only(left: 15, right: 15, bottom: 15),
-            child: ListView.builder(
-                padding: EdgeInsets.zero,
-                scrollDirection: Axis.horizontal,
-                itemCount: widget.doc["tags"].length,
-                itemBuilder: (context, index) {
-                  return Row(
-                    children: [
-                      tags(text: widget.doc["tags"][index].toString()),
-                    ],
-                  );
-                }),
-          ),
-
-          // scrolllable content!!!!
-          Expanded(
-            child: SingleChildScrollView(
-              child: Container(
-                // Bottom content goes here
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      margin: EdgeInsets.only(left: 15, right: 15),
-                      child: Text(widget.doc["description"]),
-                    ),
-
-                    Container(
-                      width: double.infinity,
-                      margin: EdgeInsets.only(top: 15),
-                      decoration: BoxDecoration(
-                          border: Border(
-                              top: BorderSide(
-                        width: 1,
-                        color: Colors.grey,
-                      ))),
-                      child: Container(
-                          margin: EdgeInsets.only(
-                            left: 15,
-                            right: 15,
-                            top: 20,
+                // scrolllable content!!!!
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Container(
+                      // Bottom content goes here
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            margin: EdgeInsets.only(left: 15, right: 15),
+                            child: Text(data["description"]),
                           ),
-                          child: Expanded(
-                            child: ListView.builder(
-                                padding: EdgeInsets.zero,
-                                scrollDirection: Axis.vertical,
-                                shrinkWrap: true,
-                                physics: ClampingScrollPhysics(),
-                                itemCount: 5,
-                                itemBuilder: (context, index) {
-                                  return commentsComp();
-                                }),
-                          )),
-                    ),
 
-                    // user comments
-                  ],
+                          // user comments
+                          Container(
+                            width: double.infinity,
+                            margin: EdgeInsets.only(top: 15),
+                            decoration: BoxDecoration(
+                                border: Border(
+                                    top: BorderSide(
+                              width: 1,
+                              color: Colors.grey,
+                            ))),
+                            child: Container(
+                                margin: EdgeInsets.only(
+                                  left: 15,
+                                  right: 15,
+                                  top: 20,
+                                ),
+                                child: Expanded(
+                                  child: ListView.builder(
+                                      padding: EdgeInsets.zero,
+                                      scrollDirection: Axis.vertical,
+                                      shrinkWrap: true,
+                                      physics: ClampingScrollPhysics(),
+                                      itemCount: data["comments"].length,
+                                      itemBuilder: (context, index) {
+                                        return commentsComp(
+                                          commentText: data["comments"][index]
+                                              ["commentText"],
+                                          commenterName: data["comments"][index]
+                                              ["commentedBy"],
+                                        );
+                                      }),
+                                )),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                 ),
-              ),
-            ),
-          ),
-        ],
+              ],
+            );
+          }
+
+          // no data content
+          return Center(
+            child: Text("oops something went wrong!!"),
+          );
+        },
       ),
 
-      // bottom flotaing action bi=utton and content
+      // bottom flotaing action button and content
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: Colors.black,
         onPressed: () {
@@ -193,6 +280,7 @@ class _BlogDetailsState extends State<BlogDetails> {
                     children: [
                       // comment textfield
                       TextField(
+                        controller: commentTextController,
                         maxLines: null,
                         keyboardType: TextInputType.multiline,
                         decoration: InputDecoration(
@@ -206,7 +294,9 @@ class _BlogDetailsState extends State<BlogDetails> {
                         width: double.infinity,
                         child: MaterialButton(
                           color: Colors.blue,
-                          onPressed: () {},
+                          // adding comment
+
+                          onPressed: commentOnPost,
                           child: Text(
                             "Add",
                             style: TextStyle(
@@ -245,7 +335,8 @@ class _BlogDetailsState extends State<BlogDetails> {
         ],
       );
 
-  Widget commentsComp() => Container(
+  Widget commentsComp({required commentText, required commenterName}) =>
+      Container(
         margin: EdgeInsets.only(bottom: 10),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -268,11 +359,11 @@ class _BlogDetailsState extends State<BlogDetails> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text("name"),
+                        Text(commenterName),
                         SizedBox(
                           height: 6,
                         ),
-                        Text("comment"),
+                        Text(commentText),
                       ],
                     ),
                   ),

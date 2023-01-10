@@ -7,6 +7,7 @@ import 'package:blog_app_fb/screens/blog_related/blog_details.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 
@@ -93,14 +94,26 @@ class _HomeScreenState extends State<HomeScreen> {
                         itemBuilder: ((context, index) {
                           return blogSingle(
                             snapshot.data!.docs[index],
-                            () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      BlogDetails(snapshot.data!.docs[index]),
-                                ),
-                              );
+                            () async {
+                              // view or clicks update
+                              try {
+                                final totalClicks =
+                                    snapshot.data!.docs[index]["clicks"] + 1;
+                                await FirebaseFirestore.instance
+                                    .collection("allblogs")
+                                    .doc(snapshot.data!.docs[index].id)
+                                    .update({"clicks": totalClicks});
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        BlogDetails(snapshot.data!.docs[index]),
+                                  ),
+                                );
+                              } on PlatformException catch (e) {
+                                print(e);
+                              }
+                              ;
                             },
                           );
                         }),
