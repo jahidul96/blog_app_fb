@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
 import 'package:blog_app_fb/screens/auth/login.dart';
+import 'package:blog_app_fb/screens/home.dart';
 import 'package:blog_app_fb/utils/needed_data.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -21,6 +22,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   // initialized category
   String categorie = "";
+
+  // loadder indicator
+  bool loadding = false;
 
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
@@ -63,6 +67,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
 // signin func
   Future signIn() async {
+    setState(() {
+      loadding = true;
+    });
     try {
       final credential = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(
@@ -85,8 +92,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
             .then((value) {
           print("data added in firestore!!");
         });
+
+        setState(() {
+          loadding = false;
+        });
+
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => HomeScreen()));
       }
+      ;
     } on PlatformException catch (e) {
+      setState(() {
+        loadding = false;
+      });
       print("some problem occuerd $e");
     }
   }
@@ -94,108 +112,130 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        margin: EdgeInsets.only(left: 15, right: 15),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            TextField(
-              controller: usernameController,
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                hintText: "Username",
-              ),
-            ),
-            SizedBox(height: 15),
-            TextField(
-              controller: emailController,
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                hintText: "Email",
-              ),
-            ),
-            SizedBox(height: 15),
-            TextField(
-              controller: passwordController,
-              obscureText: true,
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                hintText: "Password",
-              ),
-            ),
-            // select categories
-            GestureDetector(
-              onTap: selectCategories,
-              child: Container(
-                margin: EdgeInsets.only(top: 15, bottom: 20),
-                height: 55,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  color: Colors.grey.shade300,
-                ),
-                padding: EdgeInsets.only(left: 8, right: 8),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      categorie.isNotEmpty ? categorie : "Select Categories",
-                      style: TextStyle(color: Colors.black, fontSize: 15),
-                    ),
+      // lodder show when signin happening!!
+      body: loadding
+          ? Center(
+              child: CircularProgressIndicator(),
+            )
 
-                    // check button
-                    categorie.isNotEmpty
-                        ? Icon(Icons.check)
-                        : Icon(Icons.create),
-                  ],
-                ),
-              ),
-            ),
-
-            SizedBox(
-              height: 50,
-              width: double.infinity,
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(10),
-                child: MaterialButton(
-                  color: Colors.amber,
-                  onPressed: signIn,
-                  child: Text(
-                    "SignUp",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 17,
-                      fontWeight: FontWeight.bold,
+          // content
+          : Container(
+              margin: EdgeInsets.only(left: 15, right: 15),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  TextField(
+                    controller: usernameController,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      hintText: "Username",
                     ),
                   ),
-                ),
+                  SizedBox(height: 15),
+                  TextField(
+                    controller: emailController,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      hintText: "Email",
+                    ),
+                  ),
+                  SizedBox(height: 15),
+                  TextField(
+                    controller: passwordController,
+                    obscureText: true,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      hintText: "Password",
+                    ),
+                  ),
+                  // select categories
+                  GestureDetector(
+                    onTap: selectCategories,
+                    child: Container(
+                      margin: EdgeInsets.only(top: 15, bottom: 20),
+                      height: 55,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        color: Colors.grey.shade300,
+                      ),
+                      padding: EdgeInsets.only(left: 8, right: 8),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            categorie.isNotEmpty
+                                ? categorie
+                                : "Select Categories",
+                            style: TextStyle(color: Colors.black, fontSize: 15),
+                          ),
+
+                          // check button
+                          categorie.isNotEmpty
+                              ? Icon(Icons.check)
+                              : Icon(Icons.create),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  SizedBox(
+                    height: 50,
+                    width: double.infinity,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: MaterialButton(
+                        color: Colors.amber,
+                        onPressed: signIn,
+                        child: Text(
+                          "SignUp",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 17,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 15,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "Already have an Account ?",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      SizedBox(
+                        width: 15,
+                      ),
+                      InkWell(
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => LoginScreen(),
+                              ));
+                        },
+                        child: Text(
+                          "Login here!",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.blue,
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                ],
               ),
             ),
-            SizedBox(
-              height: 15,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text("Already have an Account ?"),
-                SizedBox(
-                  width: 15,
-                ),
-                InkWell(
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => LoginScreen(),
-                        ));
-                  },
-                  child: Text("Login here!"),
-                )
-              ],
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

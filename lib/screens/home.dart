@@ -3,6 +3,8 @@
 import 'package:blog_app_fb/components/single_blog.dart';
 import 'package:blog_app_fb/components/user_profile_comp.dart';
 import 'package:blog_app_fb/screens/account.dart';
+import 'package:blog_app_fb/screens/auth/register.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
@@ -52,7 +54,14 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     // right bell button
                     IconButton(
-                        onPressed: () {}, icon: Icon(Icons.notifications))
+                        onPressed: () {
+                          FirebaseAuth.instance.signOut();
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => RegisterScreen()));
+                        },
+                        icon: Icon(Icons.notifications))
                   ],
                 ),
               ),
