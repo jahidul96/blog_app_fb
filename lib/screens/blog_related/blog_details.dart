@@ -19,6 +19,8 @@ class BlogDetails extends StatefulWidget {
 }
 
 class _BlogDetailsState extends State<BlogDetails> {
+  String img =
+      "https://media.istockphoto.com/id/1270067126/photo/smiling-indian-man-looking-at-camera.jpg?s=612x612&w=0&k=20&c=ovIQ5GPurLd3mOUj82jB9v-bjGZ8updgy1ACaHMeEC0=";
   // fb auth email
   final myEmail = FirebaseAuth.instance.currentUser!.email;
 
@@ -191,7 +193,10 @@ class _BlogDetailsState extends State<BlogDetails> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      UserProfileComp(),
+                      UserProfileComp(
+                        "akash",
+                        "proggramming",
+                      ),
                       IconButton(
                           onPressed: () {},
                           icon: Icon(

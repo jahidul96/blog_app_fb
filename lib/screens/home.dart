@@ -19,24 +19,29 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  Map<String, dynamic> loggedinUser = {};
+  String username = '';
+  String categorie = '';
+
+  String img =
+      "https://media.istockphoto.com/id/1270067126/photo/smiling-indian-man-looking-at-camera.jpg?s=612x612&w=0&k=20&c=ovIQ5GPurLd3mOUj82jB9v-bjGZ8updgy1ACaHMeEC0=";
+
+  _getdata() async {
+    User? user = FirebaseAuth.instance.currentUser;
+    FirebaseFirestore.instance
+        .collection('blogUsers')
+        .doc(user!.uid)
+        .snapshots()
+        .listen((userData) {
+      setState(() {
+        username = userData.data()!['username'];
+        categorie = userData.data()!['categorie'];
+      });
+    });
+  }
 
   @override
   void initState() {
-    final user = FirebaseFirestore.instance
-        .collection("blogUsers")
-        .doc(FirebaseAuth.instance.currentUser!.uid)
-        .get();
-
-    user.then((value) {
-      print("username");
-      print(value["username"]);
-      print("u=id");
-      print(value["uid"]);
-      print("email");
-      print(value["email"]);
-    });
-
+    _getdata();
     super.initState();
   }
 
@@ -66,7 +71,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     // left content
                     Expanded(
                       child: GestureDetector(
-                        child: UserProfileComp(),
+                        child: UserProfileComp(username, categorie),
                         onTap: () {
                           Navigator.push(
                               context,
@@ -77,9 +82,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     // right bell button
                     IconButton(
-                      onPressed: () {
-                        print(loggedinUser["email"]);
-                      },
+                      onPressed: () {},
                       icon: Icon(Icons.notifications),
                     ),
                   ],
@@ -157,7 +160,7 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Container(
             margin: EdgeInsets.only(left: 12, right: 12, bottom: 8),
-            child: UserProfileComp(),
+            child: UserProfileComp(username, categorie),
           ),
           Image.network(
             doc["blogImgUrl"],

@@ -28,6 +28,8 @@ class PostBlogScreen extends StatefulWidget {
 }
 
 class _PostBlogScreenState extends State<PostBlogScreen> {
+  String img =
+      "https://media.istockphoto.com/id/1270067126/photo/smiling-indian-man-looking-at-camera.jpg?s=612x612&w=0&k=20&c=ovIQ5GPurLd3mOUj82jB9v-bjGZ8updgy1ACaHMeEC0=";
   // flutter storage
   final storageRef = FirebaseStorage.instance.ref();
 
@@ -295,7 +297,7 @@ class _PostBlogScreenState extends State<PostBlogScreen> {
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Container(
             margin: EdgeInsets.only(left: 12, right: 12, bottom: 8),
-            child: UserProfileComp(),
+            child: UserProfileComp("akash", "News"),
           ),
           Image.file(
             _image!,

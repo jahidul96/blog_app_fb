@@ -21,7 +21,7 @@ class SingleBlog extends StatelessWidget {
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Container(
           margin: EdgeInsets.only(left: 12, right: 12, bottom: 8),
-          child: UserProfileComp(),
+          child: UserProfileComp("akash", "news"),
         ),
         Image.network(
           img,
