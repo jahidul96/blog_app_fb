@@ -1,7 +1,9 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'package:blog_app_fb/screens/auth/register.dart';
 import 'package:blog_app_fb/screens/blog_related/post_a_blog.dart';
 import 'package:blog_app_fb/screens/profile_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
@@ -88,7 +90,10 @@ class _AccountPageState extends State<AccountPage> {
             ),
             child: Column(
               children: [
+                // update profile pic
                 clickableTextComp(text: "Update Profile Pic", index: 1),
+
+                // see profile
                 GestureDetector(
                   onTap: () {
                     Navigator.push(
@@ -100,6 +105,8 @@ class _AccountPageState extends State<AccountPage> {
                     text: "Profile",
                   ),
                 ),
+
+                // post a blog
                 GestureDetector(
                   child: clickableTextComp(
                     text: "Post a Blog",
@@ -111,9 +118,13 @@ class _AccountPageState extends State<AccountPage> {
                             builder: (context) => PostBlogScreen()));
                   },
                 ),
+
+                // favorites
                 clickableTextComp(
                   text: "Favorites",
                 ),
+
+                // password & security
                 clickableTextComp(
                   text: "Password & Security",
                 ),
@@ -155,7 +166,14 @@ class _AccountPageState extends State<AccountPage> {
 
                                     MaterialButton(
                                       color: Colors.blue,
-                                      onPressed: () {},
+                                      onPressed: () {
+                                        FirebaseAuth.instance.signOut();
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    RegisterScreen()));
+                                      },
                                       child: Text(
                                         "Confirm",
                                         style: TextStyle(

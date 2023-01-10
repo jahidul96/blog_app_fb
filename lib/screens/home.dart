@@ -56,14 +56,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     // right bell button
                     IconButton(
-                        onPressed: () {
-                          FirebaseAuth.instance.signOut();
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => RegisterScreen()));
-                        },
-                        icon: Icon(Icons.notifications))
+                        onPressed: () {}, icon: Icon(Icons.notifications))
                   ],
                 ),
               ),
