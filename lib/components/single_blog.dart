@@ -2,6 +2,7 @@
 
 import 'package:blog_app_fb/components/user_profile_comp.dart';
 import 'package:blog_app_fb/screens/blog_related/blog_details.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';

@@ -4,6 +4,7 @@ import 'package:blog_app_fb/components/single_blog.dart';
 import 'package:blog_app_fb/components/user_profile_comp.dart';
 import 'package:blog_app_fb/screens/account.dart';
 import 'package:blog_app_fb/screens/auth/register.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
@@ -70,14 +71,37 @@ class _HomeScreenState extends State<HomeScreen> {
             // rest of bottom content
 
             Expanded(
-                child: ListView.builder(
-                    padding: EdgeInsets.only(top: 10),
-                    shrinkWrap: true,
-                    physics: ClampingScrollPhysics(),
-                    itemCount: 5,
-                    itemBuilder: ((context, index) {
-                      return SingleBlog();
-                    })))
+              child: StreamBuilder<QuerySnapshot>(
+                  stream: FirebaseFirestore.instance
+                      .collection("allblogs")
+                      .snapshots(),
+                  builder: (context, snapshot) {
+                    // loading data
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    }
+
+                    // data content
+                    if (snapshot.hasData != null) {
+                      return ListView.builder(
+                        padding: EdgeInsets.only(top: 10),
+                        shrinkWrap: true,
+                        physics: ClampingScrollPhysics(),
+                        itemCount: snapshot.data!.docs.length,
+                        itemBuilder: ((context, index) {
+                          return SingleBlog();
+                        }),
+                      );
+                    }
+
+                    // no data content
+                    return Center(
+                      child: Text("No data Till now"),
+                    );
+                  }),
+            ),
           ],
         ),
       ),
