@@ -40,8 +40,8 @@ class SingleBlog extends StatelessWidget {
             // read more button
             TextButton(
                 onPressed: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => BlogDetails()));
+                  // Navigator.push(context,
+                  //     MaterialPageRoute(builder: (context) => BlogDetails()));
                 },
                 child: Text(
                   "Read more",

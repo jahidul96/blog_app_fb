@@ -2,12 +2,14 @@
 
 import 'package:blog_app_fb/components/tags.dart';
 import 'package:blog_app_fb/components/user_profile_comp.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 
 class BlogDetails extends StatefulWidget {
-  const BlogDetails({super.key});
+  QueryDocumentSnapshot doc;
+  BlogDetails(this.doc, {super.key});
 
   @override
   State<BlogDetails> createState() => _BlogDetailsState();
@@ -20,6 +22,7 @@ class _BlogDetailsState extends State<BlogDetails> {
   List someItems = [1, 2, 3, 4, 5, 6, 7];
   @override
   Widget build(BuildContext context) {
+    final commentLength = widget.doc["comments"].length.toString();
     return Scaffold(
       body: Column(
         children: [
@@ -30,7 +33,7 @@ class _BlogDetailsState extends State<BlogDetails> {
             decoration: BoxDecoration(
               image: DecorationImage(
                 image: NetworkImage(
-                  img,
+                  widget.doc["blogImgUrl"],
                 ),
                 fit: BoxFit.cover,
               ),
@@ -90,11 +93,15 @@ class _BlogDetailsState extends State<BlogDetails> {
               children: [
                 Row(
                   children: [
-                    iconComp(icon: Icons.favorite, count: "2"),
+                    iconComp(
+                        icon: Icons.favorite,
+                        count: widget.doc["clicks"].toString()),
                     SizedBox(width: 7),
-                    iconComp(icon: Icons.chat, count: "5"),
+                    iconComp(icon: Icons.chat, count: commentLength),
                     SizedBox(width: 7),
-                    iconComp(icon: Icons.remove_red_eye, count: "5"),
+                    iconComp(
+                        icon: Icons.remove_red_eye,
+                        count: widget.doc["likes"].toString()),
                   ],
                 ),
                 Text("10/12/22"),
@@ -104,14 +111,19 @@ class _BlogDetailsState extends State<BlogDetails> {
 
           // tags
           Container(
+            height: 40,
             margin: EdgeInsets.only(left: 15, right: 15, bottom: 15),
-            child: Row(
-              children: [
-                tags(text: "#laptop"),
-                SizedBox(width: 8),
-                tags(text: "#hello"),
-              ],
-            ),
+            child: ListView.builder(
+                padding: EdgeInsets.zero,
+                scrollDirection: Axis.horizontal,
+                itemCount: widget.doc["tags"].length,
+                itemBuilder: (context, index) {
+                  return Row(
+                    children: [
+                      tags(text: widget.doc["tags"][index].toString()),
+                    ],
+                  );
+                }),
           ),
 
           // scrolllable content!!!!
@@ -120,11 +132,11 @@ class _BlogDetailsState extends State<BlogDetails> {
               child: Container(
                 // Bottom content goes here
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Container(
                       margin: EdgeInsets.only(left: 15, right: 15),
-                      child: Text(
-                          "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries,"),
+                      child: Text(widget.doc["description"]),
                     ),
 
                     Container(

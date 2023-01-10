@@ -1,9 +1,9 @@
-// ignore_for_file: prefer_const_literals_to_create_immutables
+// ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
 
-import 'package:blog_app_fb/components/single_blog.dart';
 import 'package:blog_app_fb/components/user_profile_comp.dart';
 import 'package:blog_app_fb/screens/account.dart';
 import 'package:blog_app_fb/screens/auth/register.dart';
+import 'package:blog_app_fb/screens/blog_related/blog_details.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -91,7 +91,18 @@ class _HomeScreenState extends State<HomeScreen> {
                         physics: ClampingScrollPhysics(),
                         itemCount: snapshot.data!.docs.length,
                         itemBuilder: ((context, index) {
-                          return SingleBlog();
+                          return blogSingle(
+                            snapshot.data!.docs[index],
+                            () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      BlogDetails(snapshot.data!.docs[index]),
+                                ),
+                              );
+                            },
+                          );
                         }),
                       );
                     }
@@ -107,4 +118,43 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+
+  // single blog!!!
+  Widget blogSingle(QueryDocumentSnapshot doc, Function()? onPress) =>
+      Container(
+        margin: EdgeInsets.only(bottom: 10),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Container(
+            margin: EdgeInsets.only(left: 12, right: 12, bottom: 8),
+            child: UserProfileComp(),
+          ),
+          Image.network(
+            doc["blogImgUrl"],
+            width: double.infinity,
+            height: 200,
+            fit: BoxFit.cover,
+          ),
+          Container(
+            margin: EdgeInsets.only(left: 12, right: 12, top: 8),
+            child:
+                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              // details sample text
+              Text(doc["description"]),
+
+              // read more button
+              TextButton(
+                  onPressed: onPress,
+                  child: Text(
+                    "Read more",
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      decoration: TextDecoration.underline,
+                    ),
+                  ))
+            ]),
+          )
+        ]),
+      );
 }

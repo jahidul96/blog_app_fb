@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 Widget tags({required text}) => Container(
       alignment: Alignment.center,
-      padding: EdgeInsets.only(top: 8, bottom: 8, left: 15, right: 15),
+      padding: EdgeInsets.only(left: 15, right: 15),
       margin: EdgeInsets.only(right: 6),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(5),
